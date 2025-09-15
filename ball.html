@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crystal Ball Switch</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* top align so scroll works */
+      align-items: center;
+      min-height: 100vh; /* allow content taller than screen */
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden; /* only block horizontal scroll */
+    }
+
+    h2 {
+      margin: 20px 0;
+      font-weight: normal;
+      font-size: 1.5rem;
+      color: #bbb;
+      text-align: center;
+      opacity: 1;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .glow {
+      color: #ffb6c1;
+      text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4, 0 0 30px #ff69b4;
+    }
+
+    .crystal-ball {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle, #111 60%, #000 100%);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+      transition: all 1s ease-in-out;
+      margin: 20px 0;
+    }
+
+    .childhood, .current {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+
+    .crystal-ball.on .childhood {
+      opacity: 1;
+    }
+
+    .crystal-ball.on.show-current .childhood {
+      opacity: 0;
+    }
+
+    .crystal-ball.on.show-current .current {
+      opacity: 1;
+    }
+
+    .crystal-ball.on {
+      box-shadow:
+        inset -25px -25px 50px rgba(0, 0, 0, 0.6),
+        inset 15px 15px 40px rgba(255, 255, 255, 0.25),
+        0 0 60px rgba(255, 105, 180, 0.7),
+        0 0 120px rgba(0, 200, 255, 0.4);
+    }
+
+    .crystal-ball.on::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      left: -40%;
+      width: 180%;
+      height: 180%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), transparent 70%);
+      mix-blend-mode: screen;
+      animation: roll 6s infinite linear;
+    }
+
+    .crystal-ball.on::after {
+      content: "";
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(255, 192, 203, 0.6), transparent 70%);
+      border-radius: 50%;
+      filter: blur(25px);
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: sparkleAnim 3s infinite ease-in-out;
+    }
+
+    @keyframes sparkleAnim {
+      0% { transform: translateY(0) scale(0.5); opacity: 0.2; }
+      50% { transform: translateY(-50px) scale(1); opacity: 1; }
+      100% { transform: translateY(0) scale(0.5); opacity: 0.2; }
+    }
+
+    .wall-switch {
+      width: 70px;
+      height: 120px;
+      background: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin: 30px 0;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset -2px -2px 5px #fff, inset 2px 2px 5px #aaa;
+      cursor: pointer;
+    }
+
+    .switch-toggle {
+      width: 50px;
+      height: 60px;
+      background: #fff;
+      border: 2px solid #aaa;
+      border-radius: 6px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .wall-switch.on .switch-toggle {
+      transform: translateY(-20px);
+      background: #eee;
+    }
+
+    .wall-switch.off .switch-toggle {
+      transform: translateY(20px);
+      background: #ddd;
+    }
+
+    #nextButton {
+      margin: 40px 0;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #ff69b4;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease-in-out;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+    }
+
+    #nextButton.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @keyframes roll {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <h2 id="message">Turn on the switch 🔌</h2>
+
+  <div class="crystal-ball" id="ball">
+    <img src="us8.jpg" class="childhood" alt="Childhood Photo">
+    <img src="us9.jpg" class="current" alt="Now Photo">
+  </div>
+
+  <div class="wall-switch off" id="wallSwitch" onclick="toggleLight()">
+    <div class="switch-toggle" id="switchText">OFF</div>
+  </div>
+
+  <!-- Surprise Button -->
+  <button id="nextButton" onclick="location.href='fireworks.html'">🎉 Next Surprise 🎉</button>
+
+  <audio id="bgMusic" src="wait.mp3"></audio>
+
+  <script>
+    const messagePairs = [
+      ["🍼 Once a little angel in the crystal... 🍼", "💖 ...now the love of my life 💖"],
+      ["🌸 The sweetest child to ever exist 🌸", "✨ And the most beautiful woman today ✨"],
+      ["🌟 The crystal shows your innocent past 🌟", "❤️ ...and my forever present ❤️"]
+    ];
+    let pairIndex = 0;
+    let showCurrent = false;
+
+    function toggleLight() {
+      const ball = document.getElementById("ball");
+      const message = document.getElementById("message");
+      const switchBox = document.getElementById("wallSwitch");
+      const switchText = document.getElementById("switchText");
+      const music = document.getElementById("bgMusic");
+      const nextButton = document.getElementById("nextButton");
+
+      if (switchBox.classList.contains("off")) {
+        switchBox.classList.remove("off");
+        switchBox.classList.add("on");
+        ball.classList.add("on");
+
+        // Show childhood photo + first message
+        message.style.opacity = 0;
+        setTimeout(() => {
+          message.textContent = messagePairs[pairIndex][0];
+          message.classList.add("glow");
+          message.style.opacity = 1;
+        }, 500);
+
+        switchText.textContent = "ON";
+        music.play();
+
+        // Add sparkles
+        for (let i = 0; i < 15; i++) {
+          const sparkle = document.createElement("div");
+          sparkle.className = "sparkle";
+          sparkle.style.left = Math.random() * 280 + "px";
+          sparkle.style.top = Math.random() * 280 + "px";
+          sparkle.style.animationDuration = (2 + Math.random() * 3) + "s";
+          ball.appendChild(sparkle);
+        }
+
+        // After 5 sec, show now photo + second message
+        showCurrent = true;
+        setTimeout(() => {
+          if (showCurrent) {
+            ball.classList.add("show-current");
+
+            message.style.opacity = 0;
+            setTimeout(() => {
+              message.textContent = messagePairs[pairIndex][1];
+              message.style.opacity = 1;
+            }, 500);
+          }
+        }, 5000);
+
+        // After 15 sec, show Next Surprise button
+        setTimeout(() => {
+          if (showCurrent) {
+            nextButton.classList.add("show");
+          }
+        }, 15000);
+
+        pairIndex = (pairIndex + 1) % messagePairs.length;
+
+      } else {
+        switchBox.classList.remove("on");
+        switchBox.classList.add("off");
+        ball.classList.remove("on", "show-current");
+        message.style.opacity = 0;
+        setTimeout(() => {
+          message.textContent = "Flip the switch 🔌";
+          message.classList.remove("glow");
+          message.style.opacity = 1;
+        }, 500);
+        switchText.textContent = "OFF";
+
+        music.pause();
+        music.currentTime = 0;
+
+        document.querySelectorAll(".sparkle").forEach(s => s.remove());
+        document.getElementById("nextButton").classList.remove("show");
+
+        showCurrent = false;
+      }
+    }
+  </script>
+
+</body>
+</html>

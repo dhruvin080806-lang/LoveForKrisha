@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timeline of Us</title>
+<style>
+  body {
+    margin:0;
+    background:radial-gradient(circle at center, #0a0014, #1e0238);
+    font-family:"Segoe UI", sans-serif;
+    color:white;
+    overflow-y:auto;
+    padding:40px 20px;
+  }
+
+  h1 {
+    text-align:center;
+    margin-bottom:50px;
+    color:#ff99ac;
+    text-shadow:0 0 20px #ff4d6d;
+    font-size:clamp(1.5em, 6vw, 2.5em);
+  }
+
+  /* Cover screen */
+  #coverScreen {
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background:radial-gradient(circle at center, #1e0238, #0a0014);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    z-index:1000;
+  }
+  #coverScreen h1 {
+    font-size:clamp(2em, 6vw, 3em);
+    margin-bottom:30px;
+  }
+
+  /* ✨ Romantic Button with Hearts ✨ */
+  .btn {
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #ff4d6d, #ff99ac, #ffd6e8);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 1.2em;
+    box-shadow: 0 0 25px rgba(255, 100, 150, 0.8),
+                0 0 40px rgba(255, 150, 200, 0.6);
+    transition: all 0.4s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 60%);
+    animation: shine 3s infinite linear;
+  }
+  @keyframes shine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 30px rgba(255, 120, 170, 1),
+                0 0 60px rgba(255, 180, 210, 0.8);
+  }
+
+  /* Floating hearts from button */
+  .heart {
+    position: absolute;
+    color: #ff4d6d;
+    font-size: 18px;
+    opacity: 0.8;
+    animation: floatUp 2s linear forwards;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.8); opacity: 1; }
+    100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+  }
+
+  /* Timeline */
+  .timeline { position:relative; margin:0 auto; width:90%; max-width:700px; }
+  .timeline::before {
+    content:""; position:absolute; left:50%; transform:translateX(-50%);
+    width:4px; height:100%; background:#ff2d55; animation:pulse 3s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow:0 0 8px #ff99ac; }
+    50% { box-shadow:0 0 20px #ff4d6d; }
+  }
+  .entry { position:relative; width:50%; padding:20px; box-sizing:border-box; }
+  .entry.left { left:0; text-align:right; }
+  .entry.right { left:50%; text-align:left; }
+  .entry .content {
+    background:rgba(255,255,255,0.1);
+    border-radius:12px; padding:15px;
+    box-shadow:0 0 10px rgba(255,77,109,0.6);
+    opacity:0; transform:translateY(30px);
+    transition:all 0.8s ease;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    cursor:pointer;
+  }
+  .entry.visible .content { opacity:1; transform:translateY(0); }
+  .entry.left .content { margin-right:25px; }
+  .entry.right .content { margin-left:25px; }
+  .dot {
+    position:absolute; top:30px; left:50%; transform:translateX(-50%);
+    width:18px; height:18px; background:#ff2d55; border-radius:50%;
+    box-shadow:0 0 12px #ff99ac; z-index:1; opacity:0;
+  }
+  .entry.visible .dot { opacity:1; animation:bounce 0.6s; }
+  @keyframes bounce {
+    0% { transform:translateX(-50%) scale(0.5); opacity:0; }
+    60% { transform:translateX(-50%) scale(1.2); opacity:1; }
+    100% { transform:translateX(-50%) scale(1); }
+  }
+  .date { font-size:0.9em; color:#ffccd9; margin-bottom:6px; display:block; }
+  .photo {
+    width:100%; max-width:200px; border-radius:12px;
+    box-shadow:0 0 15px rgba(255,99,132,0.6);
+    opacity:0; transform:scale(0.8); transition:all 0.8s ease;
+  }
+  .entry.visible .photo { opacity:1; transform:scale(1); }
+  .hidden-note { display:none; font-size:0.85em; color:#ffd6e8; margin-top:8px; }
+  .content.open .hidden-note { display:block; }
+  .next-btn {
+    display:block; margin:60px auto 20px; padding:12px 24px;
+    background:white; color:#ff2d55; font-weight:bold;
+    border:none; border-radius:30px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:0.3s;
+  }
+  .next-btn:hover { background:#ffeaf0; transform:scale(1.05); }
+
+  .sparkle {
+    position:fixed; color:#ff99ac; font-size:14px;
+    opacity:0.8; pointer-events:none;
+    animation: floatScreen 6s linear forwards;
+  }
+  @keyframes floatScreen {
+    0% { transform:translateY(0) scale(0.5); opacity:0; }
+    20% { opacity:1; }
+    100% { transform:translateY(-120vh) scale(1.5); opacity:0; }
+  }
+  @media(max-width:700px){
+    .entry, .entry.left, .entry.right { width:100%; left:0; text-align:center; }
+    .entry .content { margin:20px auto; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Cover Screen -->
+  <div id="coverScreen">
+    <h1>✨ Our Journey 💞 ✨</h1>
+    <button class="btn" id="startBtn">Continue Journey ➝</button>
+  </div>
+
+  <!-- Timeline -->
+  <div id="timelinePage" style="display:none;">
+    <h1>Our Journey Together 💞</h1>
+    <div class="timeline">
+      <div class="entry left">
+        <div class="dot"></div>
+        <div class="content">
+          <span class="date">Day 1</span>
+          ✨ The day we met — my favorite beginning
+          <img src="us6.jpg" alt="The day we met" class="photo">
+          <div class="hidden-note">💌 I still remember the sparkle in your eyes that day.</div>
+        </div>
+      </div>
+
+      <div class="entry right">
+        <div class="dot"></div>
+        <div class="content">
+          <span class="date">First Smile</span>
+          😊 Your first smile that stole my heart
+          <img src="us7.jpg" alt="Your smile" class="photo">
+          <div class="hidden-note">💖 That smile is my sunshine forever.</div>
+        </div>
+      </div>
+
+      <div class="entry left">
+        <div class="dot"></div>
+        <div class="content">
+          <span class="date">Many Moments</span>
+          💌 Countless memories written in love
+          <img src="us4.jpg" alt="Memories together" class="photo">
+          <div class="hidden-note">📸 Our journey is made of beautiful snapshots of love.</div>
+        </div>
+      </div>
+
+      <div class="entry right">
+        <div class="dot"></div>
+        <div class="content">
+          <span class="date">Magic Moment</span>
+          💫 Every second with you feels enchanted
+          <img src="us1.jpg" alt="Magic Moments" class="photo">
+          <div class="hidden-note">🌙 You're my magic under every sky.</div>
+        </div>
+      </div>
+
+      <div class="entry left">
+        <div class="dot"></div>
+        <div class="content">
+          <span class="date">Always & Beyond</span>
+          ♾️ Our story continues — infinite love
+          <img src="us.jpg" alt="Forever love" class="photo">
+          <div class="hidden-note">✨ Forever is just the beginning with you.</div>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="window.location.href='world.html'">Next ➝</button>
+  </div>
+
+  <!-- Music -->
+  <audio id="bgMusic" loop>
+    <source src="music2.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+  const cover=document.getElementById("coverScreen");
+  const timeline=document.getElementById("timelinePage");
+  const startBtn=document.getElementById("startBtn");
+  const music=document.getElementById("bgMusic");
+
+  // Start journey button
+  startBtn.addEventListener("click",()=>{
+    cover.style.display="none";
+    timeline.style.display="block";
+    music.play(); // starts music when button is pressed
+  });
+
+  // Hearts on hover
+  startBtn.addEventListener("mouseover",()=>{
+    for(let i=0;i<5;i++){
+      const heart=document.createElement("div");
+      heart.className="heart";
+      heart.textContent="💖";
+      heart.style.left=(startBtn.offsetLeft+startBtn.offsetWidth/2+ (Math.random()*40-20))+"px";
+      heart.style.top=(startBtn.offsetTop-10)+"px";
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),2000);
+    }
+  });
+
+  // Scroll reveal
+  const entries=document.querySelectorAll(".entry");
+  const observer=new IntersectionObserver(entriesToShow=>{
+    entriesToShow.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add("visible"); }
+    });
+  },{threshold:0.2});
+  entries.forEach(el=>observer.observe(el));
+
+  // Hidden notes toggle
+  document.querySelectorAll(".content").forEach(c=>{
+    c.addEventListener("click",()=>c.classList.toggle("open"));
+  });
+
+  // Floating sparkles
+  const sparkleSymbols=["✨","💖","🌸","⭐","🌙"];
+  function spawnSparkle(){
+    const sparkle=document.createElement("div");
+    sparkle.className="sparkle";
+    sparkle.style.left=Math.random()*100+"%";
+    sparkle.style.bottom="0px";
+    sparkle.textContent=sparkleSymbols[Math.floor(Math.random()*sparkleSymbols.length)];
+    document.body.appendChild(sparkle);
+    setTimeout(()=>sparkle.remove(),6000);
+  }
+  setInterval(spawnSparkle,1000);
+</script>
+
+</body>
+</html>
+
+
+

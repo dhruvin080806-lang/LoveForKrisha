@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carousel of Memories</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #1a1a2e, #000);
+    color: white;
+    text-align: center;
+    min-height: 100vh;   /* allow page to grow */
+    overflow-x: hidden;  /* prevent sideways scroll */
+  }
+
+  /* Start screen */
+  #start-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at top, #0d0d1a, #000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    transition: opacity 1.5s ease;
+  }
+  #start-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #start-btn {
+    padding: 15px 35px;
+    font-size: 20px;
+    border: none;
+    border-radius: 30px;
+    background: #ff2d55;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+  }
+
+  /* Main content */
+  #main-content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    padding: 20px; /* space for mobile */
+  }
+  #main-content.show {
+    opacity: 1;
+  }
+
+  h1 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #ffb6c1;
+    text-shadow: 0 0 15px rgba(255,182,193,0.7);
+  }
+
+  /* Carousel */
+  .carousel {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+    transform-style: preserve-3d;
+    animation: spin 25s linear infinite;
+    will-change: transform;
+  }
+  .carousel:hover {
+    animation-play-state: paused;
+  }
+  .carousel figure {
+    position: absolute;
+    width: 160px;
+    height: 180px;
+    left: 50%;
+    top: 50%;
+    margin: -90px 0 0 -80px;
+    text-align: center;
+  }
+  .carousel img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.6);
+    border: 3px solid rgba(255,255,255,0.4);
+    will-change: transform;
+  }
+  figcaption {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #ffdde1;
+    max-width: 160px;
+    line-height: 1.2em;
+  }
+
+  @keyframes spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+
+  /* Next button */
+  button.next {
+    margin-top: 30px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 25px;
+    background: #ff2d55;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 1.5s ease-in-out, transform 1s ease-in-out;
+  }
+  button.next.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Sparkles */
+  .sparkle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: float 7s ease-in-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes float {
+    from { transform: translateY(0) scale(0.5); opacity: 1; }
+    to { transform: translateY(-800px) scale(1); opacity: 0; }
+  }
+
+  /* Responsive fix */
+  @media (max-width: 600px) {
+    h1 { font-size: 18px; margin-bottom: 20px; }
+    .carousel { width: 200px; height: 200px; }
+    .carousel figure { width: 130px; height: 150px; margin: -75px 0 0 -65px; }
+    .carousel img { width: 130px; height: 130px; }
+    figcaption { font-size: 11px; max-width: 130px; }
+  }
+  @media (max-width: 400px) {
+    h1 { font-size: 16px; }
+    .carousel { width: 170px; height: 170px; }
+    .carousel figure { width: 110px; height: 130px; margin: -65px 0 0 -55px; }
+    .carousel img { width: 110px; height: 110px; }
+    figcaption { font-size: 10px; max-width: 110px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Start screen -->
+  <div id="start-screen">
+    <button id="start-btn">✨ Tap Here ✨</button>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-content">
+    <h1>✨ Carousel of Memories ✨</h1>
+
+    <div class="carousel">
+      <figure style="transform:rotateY(0deg) translateZ(300px);">
+        <img src="pic1.jpg">
+        <figcaption>💕 The One Who Owns My Heart 💕</figcaption>
+      </figure>
+      <figure style="transform:rotateY(72deg) translateZ(300px);">
+        <img src="pic2.jpg">
+        <figcaption>Her Brightest Smile 🌸💖</figcaption>
+      </figure>
+      <figure style="transform:rotateY(144deg) translateZ(300px);">
+        <img src="pic3.jpg">
+        <figcaption>Forever in My Heart 💖</figcaption>
+      </figure>
+      <figure style="transform:rotateY(216deg) translateZ(300px);">
+        <img src="pic4.jpg">
+        <figcaption>Little Angel Days 🍼✨</figcaption>
+      </figure>
+      <figure style="transform:rotateY(288deg) translateZ(300px);">
+        <img src="pic5.jpg">
+        <figcaption>Now & Always ❤️</figcaption>
+      </figure>
+    </div>
+
+    <button class="next" onclick="window.location.href='ball.html'">Next ➝</button>
+  </div>
+
+  <!-- Music -->
+  <audio id="bg-music" loop>
+    <source src="love.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+  const startBtn = document.getElementById("start-btn");
+  const startScreen = document.getElementById("start-screen");
+  const mainContent = document.getElementById("main-content");
+  const audio = document.getElementById("bg-music");
+
+  startBtn.addEventListener("click", () => {
+    // Fade out start screen
+    startScreen.classList.add("fade-out");
+    setTimeout(() => startScreen.style.display = "none", 1500);
+
+    // Show main content
+    mainContent.classList.add("show");
+
+    // Play music
+    audio.play();
+
+    // Show next button after 5 sec
+    setTimeout(() => {
+      document.querySelector(".next").classList.add("show");
+    }, 5000);
+
+    // Sparkles
+    function createSparkle() {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.style.left = Math.random() * window.innerWidth + "px";
+      sparkle.style.top = window.innerHeight + "px";
+      sparkle.style.animationDuration = (5 + Math.random() * 3) + "s";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 9000);
+    }
+    setInterval(createSparkle, 350);
+  });
+</script>
+</body>
+</html>
